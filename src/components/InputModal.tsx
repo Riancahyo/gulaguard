@@ -77,7 +77,7 @@ export default function InputModal({
                 >
                   <Camera className="w-8 h-8" />
                 </button>
-                <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+                <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" capture="environment" />
 
                 <button
                   onClick={onSubmit}
