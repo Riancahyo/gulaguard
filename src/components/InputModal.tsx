@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Camera, RefreshCw, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import imageCompression from 'browser-image-compression';
 
 interface Props {
   isOpen: boolean;
@@ -21,12 +22,30 @@ export default function InputModal({
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setSelectedImage(reader.result as string);
-    reader.readAsDataURL(file);
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      });
+
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+
+      reader.readAsDataURL(compressedFile);
+
+    } catch (error) {
+      console.error('Compression error:', error);
+    }
   };
 
   return (
